@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import axios from '../lib/axios-custom'
 import toast from 'react-hot-toast'
+import { AuthUser } from '@/types'
 
 type AuthState = {
   authUser: AuthUser | null

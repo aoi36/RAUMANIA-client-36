@@ -330,6 +330,7 @@ const useOrderStore = create<OrderStoreState>((set, get) => ({
         statusCounts: response.data.result,
         isLoading: false,
       })
+      console.log(response.data.result)
     } catch (error: any) {
       console.error("Error fetching order statistics:", error)
       set({

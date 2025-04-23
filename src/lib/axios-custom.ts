@@ -4,7 +4,7 @@ const baseURL = 'http://localhost:8080'
 
 const instance = axios.create({
   baseURL: baseURL,
-  withCredentials: true // check this
+  withCredentials: true
 })
 
 export function getCookie(name: string) {
@@ -59,8 +59,10 @@ instance.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // Check for 401 status or network error that might be due to expired token
-    const isAuthError = error.response && error.response.status === 401 && !originalRequest._retry
+    const status = error.response?.status
+
+    // Check if it's a 401 or 403 (unauthorized or forbidden)
+    const isAuthError = (status === 401 || status === 403) && !originalRequest._retry
 
     if (!isAuthError) {
       return Promise.reject(error)
