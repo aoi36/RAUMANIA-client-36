@@ -97,11 +97,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   resetPassword: async (token: string, password: string, confirmPassword: string) => {
     set({ isLoading: true })
     try {
+      const searchParams = new URLSearchParams(window.location.search);
+      const email = searchParams.get("email");
+  
+      if (!email) {
+        throw new Error("Email is required");
+      }
+  
       const response = await axios.post("/api/auth/reset-password", {
         token,
+        email, // Add email to the request payload
         password,
         confirmPassword,
-      })
+      });
       toast.success(response.data.result.message || "Password reset successful")
     } catch (error: unknown) {
       console.log(error)

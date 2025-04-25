@@ -1,33 +1,50 @@
-export type User = {
+export interface User {
+  id: string
+  username: string
+  email: string
+  fullName: string
+  phoneNumber: string
+  imageUrl?: string
+  isActive: boolean
+  role: {
     id: string
-    fullName: string | null
-    email: string
-    username: string
-    phoneNumber: string | null
-    imageUrl: string | null
-    emailVerified: boolean | null
-    isActive: boolean
-    roleName: string
+    name: string
   }
-  
-  export type UserPaginationParams = {
-    pageNumber: number
-    pageSize: number
-    sortBy?: string
-    sortDirection?: string
-  }
-  
-  export type UserPage = {
-    pageNumber: number
-    pageSize: number
-    totalElements: number
-    totalPages: number
-    content: User[]
-  }
-  
-  export type ApiResponse<T> = {
-    status: number
-    message: string
-    result: T
-  }
-  
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UserPaginationParams {
+  pageNumber: number
+  pageSize: number
+  sortBy: string
+  sortDirection: string
+  name?: string
+}
+
+export interface UserPage {
+  content: User[]
+  pageNumber: number
+  pageSize: number
+  totalElements: number
+  totalPages: number
+}
+
+export interface ApiResponse<T> {
+  statusCode: number
+  message: string
+  result: T
+}
+
+export interface UpdateUserRequest {
+  fullName?: string
+  phoneNumber?: string
+  imageUrl?: string
+  isActive?: boolean
+}
+
+export interface UpdatePasswordRequest {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}

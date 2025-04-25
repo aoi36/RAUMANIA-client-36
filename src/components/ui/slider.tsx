@@ -1,39 +1,30 @@
-// @/components/ui/slider.tsx
-import * as RadixSlider from "@radix-ui/react-slider";
-import React from "react";
-import clsx from "clsx";
+"use client"
 
-interface SliderProps {
-    value?: number[];
-    onValueChange: (value: number[]) => void;
-    max?: number;
-    step?: number;
-    className?: string;
-    defaultValue?: number[]; // Added defaultValue
-  }
+import * as React from "react"
+import * as SliderPrimitive from "@radix-ui/react-slider"
 
-export const Slider: React.FC<SliderProps> = ({
-    value,
-    onValueChange,
-    max = 100,
-    step = 1,
-    className,
-    defaultValue = [0, max],
-  }) => {
-    return (
-      <RadixSlider.Root
-        className={clsx("relative flex items-center select-none touch-none w-full h-5", className)}
-        value={value || defaultValue}
-        defaultValue={defaultValue} // Added defaultValue here
-        onValueChange={onValueChange}
-        max={max}
-        step={step}
-      >
-        <RadixSlider.Track className="bg-gray-200 relative grow rounded-full h-[3px]">
-          <RadixSlider.Range className="absolute bg-black rounded-full h-full" />
-        </RadixSlider.Track>
-        <RadixSlider.Thumb className="block w-4 h-4 bg-black rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black" />
-        <RadixSlider.Thumb className="block w-4 h-4 bg-black rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black" />
-      </RadixSlider.Root>
-    );
-  };
+import { cn } from "@/lib/utils"
+
+const Slider = React.forwardRef<
+  React.ElementRef<typeof SliderPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <SliderPrimitive.Root
+    ref={ref}
+    className={cn(
+      "relative flex w-full touch-none select-none items-center",
+      className
+    )}
+    {...props}
+  >
+    <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-primary/20">
+      <SliderPrimitive.Range className="absolute h-full bg-primary" />
+    </SliderPrimitive.Track>
+    {/* Two thumbs for a range slider */}
+    <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50" />
+    <SliderPrimitive.Thumb className="block h-4 w-4 rounded-full border border-primary/50 bg-background shadow transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50" />
+  </SliderPrimitive.Root>
+))
+Slider.displayName = SliderPrimitive.Root.displayName
+
+export { Slider }

@@ -30,6 +30,35 @@ interface UserStoreState {
     },
   ) => Promise<void>
 
+  // Update user with image
+  updateUserWithImage: (
+    userId: string,
+    userData: {
+      fullName?: string
+      phoneNumber?: string
+      imageUrl?: string
+      isActive?: boolean
+    },
+    imageFile?: File | null,
+  ) => Promise<void>
+
+  // Update my info
+  updateMyInfo: (
+    userData: {
+      fullName: string
+      phoneNumber: string
+      imageUrl?: string
+    },
+    imageFile?: File | null,
+  ) => Promise<void>
+
+  // Update password
+  updatePassword: (data: {
+    currentPassword: string
+    newPassword: string
+    confirmPassword: string
+  }) => Promise<void>
+
   // Update user status
   updateUserStatus: (userId: string, isActive: boolean) => Promise<void>
 
@@ -48,6 +77,9 @@ interface UserStoreState {
 
   // Fetch user by ID
   fetchUserById: (userId: string) => Promise<void>
+
+  // Fetch my info
+  fetchMyInfo: () => Promise<User | null>
 }
 
 const useUserStore = create<UserStoreState>((set, get) => ({
@@ -111,6 +143,22 @@ const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
+  fetchMyInfo: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      const response = await axios.get<ApiResponse<User>>("/api/user/my-info")
+      set({ selectedUser: response.data.result, isLoading: false })
+      return response.data.result
+    } catch (error: any) {
+      console.error("Error fetching user info:", error)
+      set({
+        isLoading: false,
+        error: error.response?.data?.message || "Failed to fetch user info. Please try again.",
+      })
+      return null
+    }
+  },
+
   setSelectedUser: (user) => {
     set({ selectedUser: user })
   },
@@ -132,6 +180,103 @@ const useUserStore = create<UserStoreState>((set, get) => ({
       console.error("Error updating user:", error)
       toast.error(error.response?.data?.message || "Failed to update user")
       set({ isLoading: false, error: "Failed to update user." })
+      throw error
+    }
+  },
+
+  updateUserWithImage: async (userId, userData, imageFile) => {
+    set({ isLoading: true, error: null })
+    try {
+      const formData = new FormData()
+
+      // Add the user data as a JSON string in a part named "data"
+      formData.append("data", JSON.stringify(userData))
+
+      // Add the image file if it exists
+      if (imageFile) {
+        formData.append("imageFile", imageFile)
+      }
+
+      await axios.put<ApiResponse<User>>(`/api/user/${userId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+
+      // Update the user in the users array
+      set((state) => ({
+        users: state.users.map((user) => (user.id === userId ? { ...user, ...userData } : user)),
+        selectedUser: null,
+        isLoading: false,
+      }))
+
+      toast.success("User updated successfully!")
+    } catch (error: any) {
+      console.error("Error updating user:", error)
+      toast.error(error.response?.data?.message || "Failed to update user")
+      set({ isLoading: false, error: "Failed to update user." })
+      throw error
+    }
+  },
+
+  updateMyInfo: async (userData, imageFile) => {
+    set({ isLoading: true, error: null });
+    try {
+      const formData = new FormData();
+
+  
+      const dataBlob = new Blob([JSON.stringify(userData)], {
+        type: 'application/json'
+      });
+    
+      formData.append('data', dataBlob);
+
+      // Add the image file if it exists
+      if (imageFile) {
+        // Ensure the part name matches the @RequestPart value in the backend
+        formData.append('imageFile', imageFile);
+      }
+
+      // Optional: Log FormData contents for debugging (remove in production)
+      formData.forEach((value, key) => {
+        console.log(key, value);
+      });
+
+      const response = await axios.put<ApiResponse<User>>(
+        '/api/user/update-my-info', // Ensure this endpoint matches your backend PUT mapping
+        formData,
+        {
+          headers: {
+            // Axios sets 'Content-Type': 'multipart/form-data' automatically
+            // when you pass FormData, but explicitly setting it doesn't hurt.
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      toast.success("Profile updated successfully!")
+    } catch (error: any) {
+      console.error("Error updating profile:", error)
+      toast.error(error.response?.data?.message || "Failed to update profile")
+      set({ isLoading: false, error: "Failed to update profile." })
+      throw error
+    }finally {
+  
+      set({ isLoading: false }); // Set loading FALSE after operation completes
+    }
+  },
+
+  updatePassword: async (data) => {
+    set({ isLoading: true, error: null })
+    try {
+      await axios.put<ApiResponse<null>>("/api/user/update-password", data)
+
+      set({ isLoading: false })
+      toast.success("Password updated successfully!")
+    } catch (error: any) {
+      console.error("Error updating password:", error)
+      toast.error(error.response?.data?.message || "Failed to update password")
+      set({ isLoading: false, error: "Failed to update password." })
       throw error
     }
   },

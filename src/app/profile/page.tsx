@@ -107,8 +107,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <DashboardShell>
-      <DashboardHeader title="My Profile" description="View and update your profile information" />
+   
 
       <div className="p-6">
         <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -196,20 +195,7 @@ export default function ProfilePage() {
                       />
                     </div>
 
-                    {!imageFile && (
-                      <div className="space-y-2">
-                        <Label htmlFor="imageUrl">Profile Image URL</Label>
-                        <Input
-                          id="imageUrl"
-                          value={imageUrl}
-                          onChange={(e) => setImageUrl(e.target.value)}
-                          placeholder="Enter image URL for your profile picture"
-                        />
-                        <p className="text-xs text-gray-500">
-                          Enter a URL for your profile picture or upload an image above
-                        </p>
-                      </div>
-                    )}
+                  
 
                     <div className="flex justify-end gap-4 mt-4">
                       <Button
@@ -305,6 +291,5 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardShell>
   )
 }

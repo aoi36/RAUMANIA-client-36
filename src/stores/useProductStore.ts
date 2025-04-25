@@ -270,7 +270,7 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
           scent,
         },
       })
-      console.log("Elasticsearch response:", response.data)
+      console.log("Elasticsearch response:", response.data.result)
       // Update store with search results
       const searchResults = response.data.result
       set({

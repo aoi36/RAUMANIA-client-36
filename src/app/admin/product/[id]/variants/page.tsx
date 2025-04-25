@@ -6,9 +6,9 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { DashboardShell } from "@/components/admin/dashboard-shell"
 import { DashboardHeader } from "@/components/admin/dashboard-header"
-import { Pencil, Trash2, Plus, ArrowLeft } from "lucide-react"
+import { Pencil, Trash2, Plus, ArrowLeft, Eye } from "lucide-react"
 import useProductStore from "@/stores/useProductStore"
-import axios from "@/lib/axios-custom"
+import useProductVariantStore from "@/stores/useProductVariantStore"
 import toast from "react-hot-toast"
 import type { ProductVariant } from "@/types/product-variant"
 
@@ -58,12 +58,19 @@ export default function ProductVariantsPage() {
   const productId = params.id as string
 
   const { fetchProductById } = useProductStore()
+  const { getProductVariantsByProduct, deleteProductVariant } = useProductVariantStore()
 
   const [product, setProduct] = useState<any>(null)
   const [variants, setVariants] = useState<ProductVariant[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [variantToDelete, setVariantToDelete] = useState<ProductVariant | null>(null)
+  const [pagination, setPagination] = useState({
+    pageNumber: 1,
+    pageSize: 10,
+    totalElements: 0,
+    totalPages: 0,
+  })
 
   useEffect(() => {
     if (productId) {
@@ -73,9 +80,17 @@ export default function ProductVariantsPage() {
           const productData = await fetchProductById(productId)
           setProduct(productData)
 
-          // Fetch variants for this product
-          const response = await axios.get(`/api/product/${productId}/variants`)
-          setVariants(response.data.result || [])
+          // Use the Zustand store method to fetch variants
+          const variantsData = await getProductVariantsByProduct(productId, pagination.pageNumber, pagination.pageSize)
+
+          if (variantsData) {
+            setVariants(variantsData.content)
+            setPagination((prev) => ({
+              ...prev,
+              totalElements: variantsData.totalElements,
+              totalPages: variantsData.totalPages,
+            }))
+          }
         } catch (error) {
           console.error("Failed to fetch product or variants:", error)
           toast.error("Failed to load product variants")
@@ -88,10 +103,14 @@ export default function ProductVariantsPage() {
     } else {
       router.push("/admin/product-list")
     }
-  }, [productId, fetchProductById, router])
+  }, [productId, fetchProductById, getProductVariantsByProduct, pagination.pageNumber, pagination.pageSize, router])
 
   const handleAddVariant = () => {
     router.push(`/admin/product-variants/add?productId=${productId}`)
+  }
+
+  const handleViewVariant = (variantId: string) => {
+    router.push(`/admin/product-variants/detail/${variantId}`)
   }
 
   const handleEditVariant = (variantId: string) => {
@@ -108,11 +127,12 @@ export default function ProductVariantsPage() {
 
     setIsLoading(true)
     try {
-      await axios.delete(`/api/product-variant/${variantToDelete.id}`)
+      const success = await deleteProductVariant(variantToDelete.id)
 
-      // Remove the deleted variant from the list
-      setVariants(variants.filter((v) => v.id !== variantToDelete.id))
-      toast.success("Product variant deleted successfully")
+      if (success) {
+        // Remove the deleted variant from the list
+        setVariants(variants.filter((v) => v.id !== variantToDelete.id))
+      }
     } catch (error) {
       console.error("Failed to delete variant:", error)
       toast.error("Failed to delete product variant")
@@ -121,6 +141,13 @@ export default function ProductVariantsPage() {
       setIsDeleteDialogOpen(false)
       setVariantToDelete(null)
     }
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageNumber: newPage,
+    }))
   }
 
   return (
@@ -194,6 +221,13 @@ export default function ProductVariantsPage() {
                         <td className="px-4 py-4">
                           <div className="flex items-center justify-center gap-2">
                             <button
+                              onClick={() => handleViewVariant(variant.id)}
+                              className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200"
+                              title="View Variant Details"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
                               onClick={() => handleEditVariant(variant.id)}
                               className="p-2 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200"
                               title="Edit Variant"
@@ -213,6 +247,51 @@ export default function ProductVariantsPage() {
                     ))}
                   </tbody>
                 </table>
+
+                {/* Pagination */}
+                {pagination.totalPages > 1 && (
+                  <div className="flex justify-center mt-6">
+                    <nav className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handlePageChange(Math.max(1, pagination.pageNumber - 1))}
+                        disabled={pagination.pageNumber === 1}
+                        className={`px-3 py-1 rounded-md ${
+                          pagination.pageNumber === 1
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
+                        }`}
+                      >
+                        Previous
+                      </button>
+
+                      {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`px-3 py-1 rounded-md ${
+                            pagination.pageNumber === page
+                              ? "bg-orange-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ))}
+
+                      <button
+                        onClick={() => handlePageChange(Math.min(pagination.totalPages, pagination.pageNumber + 1))}
+                        disabled={pagination.pageNumber === pagination.totalPages}
+                        className={`px-3 py-1 rounded-md ${
+                          pagination.pageNumber === pagination.totalPages
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
+                        }`}
+                      >
+                        Next
+                      </button>
+                    </nav>
+                  </div>
+                )}
               </div>
             )}
           </div>
