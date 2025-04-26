@@ -377,11 +377,11 @@ export default function OrderDetailsPage() {
   )
 
   return (
-    <Bounded className="min-h-screen bg-[#fffdf9] py-16">
+    <Bounded className="min-h-screen bg-brand-gray py-16">
       <div className="max-w-4xl mx-auto">
         <Button
           variant="ghost"
-          className="mb-6 flex items-center gap-2 font-cormorant text-brand-purple hover:bg-brand-pink hover:text-brand-purple"
+          className="mb-6 flex items-center gap-2 font-cormorant text-brand-purple hover:bg-brand-be hover:text-brand-purple"
           onClick={handleGoBack}
         >
           <ArrowLeft className="h-4 w-4" /> Back
@@ -390,9 +390,9 @@ export default function OrderDetailsPage() {
         <div className="bg-white border border-brand-pink/20 p-8 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
-              <Heading as="h1" className="mb-1 font-cormorant text-3xl text-brand-purple">
-                Order id: {selectedOrder.orderNumber ? `#${selectedOrder.orderNumber}` : selectedOrder.id}
-              </Heading>
+            <h1 className="mb-1 text-5xl text-brand-purple font-normal">
+                Order ID: {selectedOrder.orderNumber ? `#${selectedOrder.orderNumber}` : selectedOrder.id}
+              </h1>
               <p className="text-gray-500 font-cormorant">Placed on {formatDate(selectedOrder.createdAt)}</p>
             </div>
           </div>

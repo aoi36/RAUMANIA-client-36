@@ -255,7 +255,8 @@ export default function ReviewsPage() {
                   >
                     <SelectValue placeholder="Choose a product" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-60 overflow-auto">
+                  <SelectContent className="bg-white shadow-md rounded-md">
+
                     {filteredProducts.length > 0 ? (
                       filteredProducts.map((product) => (
                         <SelectItem key={product.id} value={product.id} className="cursor-pointer hover:bg-orange-50">
@@ -368,7 +369,8 @@ export default function ReviewsPage() {
                   <SelectTrigger id="rating">
                     <SelectValue placeholder="Select rating" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white shadow-md rounded-md">
+
                     <SelectItem value="1">1 Star</SelectItem>
                     <SelectItem value="2">2 Stars</SelectItem>
                     <SelectItem value="3">3 Stars</SelectItem>
@@ -395,7 +397,7 @@ export default function ReviewsPage() {
               <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button className="bg-blue-500 text-white hover:bg-blue-600" type="submit" disabled={isLoading}>
                 {isLoading ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
@@ -422,7 +424,7 @@ export default function ReviewsPage() {
             <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button type="button" variant="destructive" onClick={confirmDelete} disabled={isLoading}>
+            <Button className="bg-red-500 text-white hover:bg-red-600" type="button" variant="destructive" onClick={confirmDelete} disabled={isLoading}>
               {isLoading ? "Deleting..." : "Delete Review"}
             </Button>
           </DialogFooter>

@@ -87,6 +87,12 @@ export type OrdersPage = {
 }
 
 export type OrderStatusCounts = {
+  deliveryStatus: {
+    CANCELLED: number
+    DELIVERED: number
+    DELIVERING: number
+    PREPARING: number
+  }
   orderStatus: {
     CANCELLED: number
     DELIVERED: number
@@ -103,12 +109,7 @@ export type OrderStatusCounts = {
     REFUNDED: number
     PENDING: number
   }
-  deliveryStatus: {
-    CANCELLED: number
-    DELIVERED: number
-    DELIVERING: number
-    PREPARING: number
-  }
+  
 }
 
 export type UpdateOrderStatusRequest = {

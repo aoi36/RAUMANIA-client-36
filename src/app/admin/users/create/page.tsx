@@ -188,7 +188,7 @@ export default function CreateUserPage() {
                   <SelectTrigger id="roleName">
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white shadow-md rounded-md">
                     <SelectItem value="ADMIN">Admin</SelectItem>
                     <SelectItem value="USER">User</SelectItem>
                     <SelectItem value="MODERATOR">Moderator</SelectItem>
@@ -202,7 +202,7 @@ export default function CreateUserPage() {
               <Button type="button" variant="outline" onClick={() => router.push("/admin/users")}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button className="bg-blue-500 text-white hover:bg-blue-600" type="submit" disabled={isLoading}>
                 {isLoading ? "Creating..." : "Create User"}
               </Button>
             </CardFooter>

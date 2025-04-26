@@ -1,10 +1,20 @@
+import { Header } from "@/components/Header";
+import { NormalFooter } from "@/components/NormalFooter";
+
 import ProductSearch from "@/components/search/product-search";
 
 export default function SearchPage() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-6">Product Search</h1>
+    <>
+    <Header/>
+
+    <div className="h-24 md:h-32 bg-brand-gray" /> 
+
+    <div className="bg-brand-gray min-h-screen">
       <ProductSearch />
     </div>
+
+      <NormalFooter/>
+    </>
   )
 }

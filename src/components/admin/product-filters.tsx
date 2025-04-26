@@ -1,8 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search, X } from "lucide-react"
+import axios from "@/lib/axios-custom"
+
+interface Brand {
+  id: string
+  name: string
+}
 
 export function ProductFilters() {
   const router = useRouter()
@@ -15,6 +21,33 @@ export function ProductFilters() {
   const [isActive, setIsActive] = useState<string>(
     searchParams.get("isActive") === "true" ? "true" : searchParams.get("isActive") === "false" ? "false" : "",
   )
+
+  // Add state for brands
+  const [brands, setBrands] = useState<Brand[]>([])
+  const [isLoadingBrands, setIsLoadingBrands] = useState(false)
+  const [brandError, setBrandError] = useState("")
+
+  // Fetch brands on component mount
+  useEffect(() => {
+    const fetchBrands = async () => {
+      setIsLoadingBrands(true)
+      setBrandError("")
+
+      try {
+        const response = await axios.get("/api/brand/name");
+        const data = response.data;
+    
+        setBrands(data.result || []);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+        setBrandError("Failed to load brands");
+      } finally {
+        setIsLoadingBrands(false);
+      }
+    }
+
+    fetchBrands()
+  }, [])
 
   const applyFilters = () => {
     const params = new URLSearchParams()
@@ -80,14 +113,28 @@ export function ProductFilters() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Brand/Category</label>
-          <input
-            type="text"
-            value={brandName}
-            onChange={(e) => setBrandName(e.target.value)}
-            placeholder="Brand name"
-            className="px-4 py-2 w-full border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
-          />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+          {brandError ? (
+            <div className="text-sm text-red-500">{brandError}</div>
+          ) : (
+            <select
+              value={brandName}
+              onChange={(e) => setBrandName(e.target.value)}
+              disabled={isLoadingBrands}
+              className="px-4 py-2 w-full border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+            >
+              <option value="">All Brands</option>
+              {isLoadingBrands ? (
+                <option disabled>Loading brands...</option>
+              ) : (
+                brands.map((brand) => (
+                  <option key={brand.id} value={brand.name}>
+                    {brand.name}
+                  </option>
+                ))
+              )}
+            </select>
+          )}
         </div>
 
         <div>
@@ -119,3 +166,5 @@ export function ProductFilters() {
     </div>
   )
 }
+
+export default ProductFilters

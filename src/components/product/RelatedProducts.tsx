@@ -12,7 +12,7 @@ interface RelatedProduct {
   id: string
   name: string
   thumbnailImage: string
-  price: number
+  minPrice: number
   customizeUrl?: string
 }
 
@@ -57,7 +57,7 @@ export function RelatedProducts({ relatedProducts: initialProducts = [] }: Relat
             id: `placeholder-${i}`,
             name: "Velvet Bloom",
             thumbnailImage: "/placeholder.svg?height=150&width=150",
-            price: 50000000,
+            minPrice: 50000000,
           })),
         )
       } finally {

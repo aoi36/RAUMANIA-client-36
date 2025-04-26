@@ -76,7 +76,7 @@ export default function BrandsPage() {
   return (
     <DashboardShell>
       <DashboardHeader title="Brand Management" description="Manage your product brands">
-        <Button onClick={() => router.push("/admin/brands/create")}>
+        <Button className="bg-blue-500 text-white hover:bg-blue-600" onClick={() => router.push("/admin/brands/create")}>
           <Plus className="mr-2 h-4 w-4" />
           Add Brand
         </Button>
@@ -217,7 +217,7 @@ export default function BrandsPage() {
             <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button type="button" variant="destructive" onClick={confirmDelete} disabled={isLoading}>
+            <Button className="bg-red-500 text-white hover:bg-red-600" type="button" variant="destructive" onClick={confirmDelete} disabled={isLoading}>
               {isLoading ? "Deleting..." : "Delete Brand"}
             </Button>
           </DialogFooter>

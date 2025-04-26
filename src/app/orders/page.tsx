@@ -7,6 +7,9 @@ import type { OrderPaginationParams } from "@/types/pagination"
 import useOrderStore from "@/stores/useOrderStore"
 import { DashboardShell } from "@/components/admin/dashboard-shell"
 import { DashboardHeader } from "@/components/admin/dashboard-header"
+import { Header } from "@/components/Header"
+import { NormalFooter } from "@/components/NormalFooter"
+import clsx from "clsx"
 
 // Helper function to format dates
 const formatDate = (dateString: string | Date) => {
@@ -58,27 +61,36 @@ export default function OrdersPage() {
     router.push(`/orders?${params.toString()}`)
   }
 
-
-
-
   return (
+    <>
+    <Header/>
+    <div className="h-24 md:h-32 bg-brand-gray" /> 
     <div className="min-h-screen bg-brand-gray p-8 font-cormorant text-foreground">
       {error && (
         <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl shadow">
           {error}
         </div>
       )}
-
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-brand-orange">
+       <h1
+          className={clsx(
+            'text-[3rem] md:text-[4rem] font-dancing tracking-tight text-brand-purple drop-shadow-md transition-all duration-700 text-center mb-10'
+          )}
+        >
+          Order List
+        </h1>
+      <div className="bg-white rounded-xl shadow-md overflow-hidden border ">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-brand-orange/10">
-              <tr className="border-b border-brand-orange">
+              <tr>
                 <th className="px-6 py-4 text-left text-sm font-dancing font-medium text-brand-purple cursor-pointer">
                   Order Date
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-dancing font-medium text-brand-purple cursor-pointer">
                   Total Amount
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-dancing font-medium text-brand-purple cursor-pointer">
+                  Order Quantity
                 </th>
                 <th className="px-6 py-4 text-center text-sm font-dancing font-medium text-brand-purple">
                   Action
@@ -90,7 +102,7 @@ export default function OrdersPage() {
                 <tr>
                   <td colSpan={3} className="px-6 py-8 text-center text-brand-purple">
                     <div className="flex flex-col items-center">
-                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-blue border-t-brand-orange"></div>
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-blue "></div>
                       <p className="mt-2">Loading orders...</p>
                     </div>
                   </td>
@@ -105,13 +117,16 @@ export default function OrdersPage() {
                 myOrders.map((order) => (
                   <tr
                     key={order.orderId}
-                    className="border-b border-brand-orange hover:bg-brand-orange/10 transition-colors duration-200"
+                    className="border-b  hover:bg-brand-orange/10 transition-colors duration-200"
                   >
-                    <td className="px-6 py-4 text-brand-purple">
+                    <td className="px-6 py-4 text-brand-purple text-xl">
                       {formatDate(order.createdAt)}
                     </td>
-                    <td className="px-6 py-4 text-brand-purple">
+                    <td className="px-6 py-4 text-brand-purple text-xl">
                       ${order.totalAmount.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-brand-purple text-xl">
+                      {order.quantity}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <button
@@ -130,7 +145,7 @@ export default function OrdersPage() {
         </div>
 
         {/* Pagination */}
-        <div className="px-6 py-4 flex items-center justify-between border-t border-brand-orange bg-white">
+        <div className="px-6 py-4 flex items-center justify-between border-t  bg-white">
           <div className="text-sm text-muted-foreground">
             Showing{" "}
             {myOrders.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} to{" "}
@@ -186,5 +201,7 @@ export default function OrdersPage() {
         </div>
       </div>
     </div>
+    <NormalFooter/>
+    </>
   );
 }

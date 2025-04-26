@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import clsx from 'clsx';
 import toast, { Toaster } from 'react-hot-toast';
+import { Header } from '@/components/Header';
+import { NormalFooter } from '@/components/NormalFooter';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -32,6 +34,11 @@ export default function ContactPage() {
   };
 
   return (
+<>
+    <Header/>
+
+    <div className="h-24 md:h-32 bg-brand-gray" /> 
+
     <div className="min-h-screen bg-brand-gray text-brand-purple px-6 py-16">
       {/* Hot Toast Container */}
       <Toaster position="top-center" reverseOrder={false} />
@@ -133,5 +140,7 @@ export default function ContactPage() {
         />
       </div>
     </div>
+    <NormalFooter/>
+    </>
   );
 }

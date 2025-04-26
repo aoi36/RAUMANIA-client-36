@@ -50,5 +50,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null // This prevents flash of content before redirect
   }
 
-  return <>{children}</>
+  return  <div className="font-sans">
+  {children}
+</div>
 }

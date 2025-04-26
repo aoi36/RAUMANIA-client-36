@@ -50,7 +50,7 @@ interface RelatedProduct {
   id: string
   name: string
   thumbnailImage: string
-  price: number
+  minPrice: number
 }
 
  interface SearchProduct {
@@ -78,7 +78,7 @@ export interface Product {
   brandName: string
   productVariants: ProductVariant[]
   productImages: ProductImage[]
-  threeLatestReviews: Review[]
+  fiveLatestReviews: Review[]
   reviewStatistic: ReviewStatistic
   relatedProducts: RelatedProduct[]
   customizeUrl?: string

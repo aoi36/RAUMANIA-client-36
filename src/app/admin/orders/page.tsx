@@ -59,7 +59,7 @@ export default function OrdersPage() {
     setStatusForm({
       orderStatus: order.orderStatus,
       paymentStatus: order.paymentStatus,
-      deliveryStatus: order.deliveryStatus || DeliveryStatus.PREPARING,
+      deliveryStatus: order.deliveryStatus,
     })
     setIsEditDialogOpen(true)
   }
@@ -89,6 +89,7 @@ export default function OrdersPage() {
       await updateOrderStatus(selectedOrder.id, statusForm)
       setIsEditDialogOpen(false)
       setSelectedOrder(null)
+      window.location.reload()
     }
   }
 
@@ -140,7 +141,7 @@ export default function OrdersPage() {
             <CardContent className="p-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-gray-500 text-sm font-medium">Payment Pending</h3>
+                  <h3 className="text-gray-500 text-sm font-medium">Order Pending</h3>
                   <p className="text-2xl font-semibold mt-1">{statusCounts?.orderStatus?.PENDING || 0}</p>
                 </div>
                 <div className="h-12 w-12 bg-red-50 rounded-lg flex items-center justify-center">
@@ -446,7 +447,7 @@ export default function OrdersPage() {
 
       {/* Edit Order Status Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Update Order Status</DialogTitle>
           </DialogHeader>
@@ -461,7 +462,7 @@ export default function OrdersPage() {
                   <SelectTrigger id="orderStatus">
                     <SelectValue placeholder="Select order status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white shadow-md rounded-md">
                     <SelectItem value={OrderStatus.PENDING}>Pending</SelectItem>
                     <SelectItem value={OrderStatus.PROCESSING}>Processing</SelectItem>
                     <SelectItem value={OrderStatus.DELIVERED}>Completed</SelectItem>
@@ -479,7 +480,7 @@ export default function OrdersPage() {
                   <SelectTrigger id="paymentStatus">
                     <SelectValue placeholder="Select payment status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white shadow-md rounded-md">
                     <SelectItem value={PaymentStatus.PENDING}>Pending</SelectItem>
                     <SelectItem value={PaymentStatus.COMPLETED}>Completed</SelectItem>
                     <SelectItem value={PaymentStatus.FAILED}>Failed</SelectItem>
@@ -497,8 +498,7 @@ export default function OrdersPage() {
                   <SelectTrigger id="deliveryStatus">
                     <SelectValue placeholder="Select delivery status" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={DeliveryStatus.PREPARING}>Pending</SelectItem>
+                  <SelectContent className="bg-white shadow-md rounded-md">
                     <SelectItem value={DeliveryStatus.DELIVERING}>Processing</SelectItem>
                     <SelectItem value={DeliveryStatus.PREPARING}>Preparing</SelectItem>
                     <SelectItem value={DeliveryStatus.DELIVERED}>Shipped</SelectItem>
@@ -512,7 +512,7 @@ export default function OrdersPage() {
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleStatusUpdate}>Update Status</Button>
+            <Button className="bg-blue-500 text-white hover:bg-blue-600" onClick={handleStatusUpdate}>Update Status</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

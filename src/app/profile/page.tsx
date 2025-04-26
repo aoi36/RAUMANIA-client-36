@@ -27,6 +27,7 @@ export default function ProfileRoute() {
 
   useEffect(() => {
     if (!isCheckingAuth && !authUser && !isLoading) {
+      
       router.push("/login")
     }
   }, [authUser, isCheckingAuth, isLoading, router])

@@ -128,7 +128,7 @@ export default function AddProductVariantPage() {
         title="Add Product Variant"
         description={product ? `Adding variant for ${product.name}` : "Adding new product variant"}
       >
-        <Button variant="outline" size="sm" onClick={() => router.push("/admin/product-list")}>
+        <Button  variant="outline" size="sm" onClick={() => router.push("/admin/product-list")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Products
         </Button>
@@ -189,7 +189,6 @@ export default function AddProductVariantPage() {
                     id="stock"
                     name="stock"
                     type="number"
-                    value={formData.stock}
                     onChange={handleInputChange}
                     min="0"
                     className={errors.stock ? "border-red-500" : ""}
@@ -203,7 +202,6 @@ export default function AddProductVariantPage() {
                     id="price"
                     name="price"
                     type="number"
-                    value={formData.price}
                     onChange={handleInputChange}
                     min="0"
                     step="0.01"
@@ -218,7 +216,7 @@ export default function AddProductVariantPage() {
               <Button type="button" variant="outline" onClick={() => router.push("/admin/product-list")}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button className="bg-blue-500 text-white hover:bg-blue-600" type="submit" disabled={isLoading}>
                 {isLoading ? "Creating..." : "Create Variant"}
               </Button>
             </CardFooter>

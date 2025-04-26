@@ -243,7 +243,7 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
     try {
       const {
         pageNumber = 1,
-        pageSize = 10,
+        pageSize = 6,
         sortBy = "id",
         sortDirection = "asc",
         name,

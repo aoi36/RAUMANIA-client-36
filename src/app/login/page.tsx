@@ -28,8 +28,13 @@ export default function LoginPage() {
 
     try {
       await login(identifier, password)
-      router.push("/")
-    } catch (error) {
+      if (document.referrer.includes("/unauthorized")) {
+        router.back() // go back to login page
+        setTimeout(() => {
+          router.back() // go back again to the page before unauthorized
+        }, 100)
+    } 
+    }catch (error) {
       console.error("Login failed:", error)
     } finally {
       setIsLoading(false)

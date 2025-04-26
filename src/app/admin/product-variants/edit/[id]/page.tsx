@@ -222,7 +222,7 @@ export default function EditProductVariantPage() {
                 <Button type="button" variant="outline" onClick={() => router.push("/admin/product-list")}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading}>
+                <Button className="bg-blue-500 text-white hover:bg-blue-600" type="submit" disabled={isLoading}>
                   {isLoading ? "Saving..." : "Save Changes"}
                 </Button>
               </CardFooter>

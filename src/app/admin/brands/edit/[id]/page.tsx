@@ -96,7 +96,7 @@ export default function EditBrandPage() {
   return (
     <DashboardShell>
       <DashboardHeader title="Edit Brand" description="Update brand information">
-        <Button variant="outline" size="sm" onClick={() => router.push("/admin/brands")}>
+        <Button className="bg-blue-500 text-white hover:bg-blue-600" variant="outline" size="sm" onClick={() => router.push("/admin/brands")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Brands
         </Button>
@@ -148,7 +148,7 @@ export default function EditBrandPage() {
                 <Button type="button" variant="outline" onClick={() => router.push("/admin/brands")}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isLoading}>
+                <Button className="bg-blue-500 text-white hover:bg-blue-600" type="submit" disabled={isLoading}>
                   {isLoading ? "Saving..." : "Save Changes"}
                 </Button>
               </CardFooter>

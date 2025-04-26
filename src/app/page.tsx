@@ -1,84 +1,82 @@
-"use client"
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { Header } from "@/components/Header";
 import Hero from "@/components/home/Hero";
+import TextAndImage from "@/components/home/TextAndImage/TextAndImage";
+import VideoBlock from "@/components/home/VideoBlock/videoblock";
+
+import { heroData, productsData, textAndImageSlices } from "./data/homeData";
+import { TextAndImageProps } from "@/components/home/TextAndImage/TextAndImage";
+import Footer from "@/components/Footer";
+import { InteractivePerfume } from "@/components/home/InteractivePerfume";
 import ProductGrid from "@/components/ProductGrid/ProductGrid";
 
+
+type TextAndImageBundle = {
+  slice_type: "text_and_image_bundle";
+  slices: TextAndImageProps[];
+};
+
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/product/all", {
-          params: {
-            pageNumber: 1,
-            pageSize: 4,
-            sortBy: "id",
-            sortDirection: "asc",
-          },
-        });
-
-        setProducts(response.data.result.content); 
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const bundledSlices = bundleTextAndImageSlices(textAndImageSlices);
 
   return (
     <>
       <Header />
+
+      <div className="relative">
+        <InteractivePerfume />
+
       <Hero
-        heading="Elevate Your Senses with Timeless Scents"
-        body="At Raumania Fragrance, we craft luxurious scents that capture emotions, memories, and moments. Each fragrance is designed to elevate your senses, blending the finest ingredients to create timeless aromas."
-        buttonText="Custom Your Perfumes"
-        buttonHref="/explore"
+        heading={heroData.heading}
+        body={heroData.body}
+        buttonText={heroData.buttonText}
+        buttonHref={heroData.buttonHref}
+        color={heroData.color}
       />
-      {loading ? (
-        <p className="text-center">Loading products...</p>
-      ) : (
-        <ProductGrid
-          heading="Our Perfumes"
-          body="Browse our luxurious collection of signature scents."
-          products={products.map((product: Product) => ({
-            id: product.id,
-            name: product.name,
-            thumbnailImage: "https://res.cloudinary.com/dr4kiyshe/image/upload/v1731717759/mtp_zm7tdf.jpg",
-            price: product.price,
-            customizeUrl: "/customize/street-rocket",
-            description: "",
-            productMaterial: "",
-            inspiration: "",
-            usageInstructions: "",
-            stock: 0,
-            isActive: true,
-            brandName: "N/A",
-          
-            productVariants: [],
-            productImages: [],
-            reviewStatistic: {
-              averageRating: 0,
-              totalReviews: 0,
-              fiveStarReviews: 0,
-              fourStarReviews: 0,
-              threeStarReviews: 0,
-              twoStarReviews: 0,
-              oneStarReviews: 0,
-            },
-            threeLatestReviews: [],
-            relatedProduct: [],
-          }))}
-          
-          
-        />
-      )}
+      </div>
+
+      <ProductGrid
+        heading="Our Perfumes"
+        body="Browse our luxurious collection of signature scents."
+        products={productsData}
+      />
+
+      {bundledSlices.map((slice, index) => {
+        if ("slice_type" in slice && slice.slice_type === "text_and_image_bundle") {
+          return (
+            <div key={index}>
+              {slice.slices.map((s, i) => (
+                <TextAndImage key={i} {...s} />
+              ))}
+            </div>
+          );
+        }
+
+        
+      })}
+
+      <VideoBlock youtubeID="VllN0yINA5A" />
+
+      <Footer/>
     </>
   );
+}
+
+function bundleTextAndImageSlices(
+  slices: TextAndImageProps[]
+): (TextAndImageProps | TextAndImageBundle)[] {
+  const res: (TextAndImageProps | TextAndImageBundle)[] = [];
+
+  for (const slice of slices) {
+    const last = res.at(-1);
+    if (last && "slice_type" in last && last.slice_type === "text_and_image_bundle") {
+      last.slices.push(slice);
+    } else {
+      res.push({
+        slice_type: "text_and_image_bundle",
+        slices: [slice],
+      });
+    }
+  }
+
+  return res;
 }

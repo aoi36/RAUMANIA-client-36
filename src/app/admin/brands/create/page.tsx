@@ -72,7 +72,7 @@ export default function CreateBrandPage() {
   return (
     <DashboardShell>
       <DashboardHeader title="Create New Brand" description="Add a new brand to the system">
-        <Button variant="outline" size="sm" onClick={() => router.push("/admin/brands")}>
+        <Button className="bg-blue-500 text-white hover:bg-blue-600" variant="outline" size="sm" onClick={() => router.push("/admin/brands")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Brands
         </Button>
@@ -117,7 +117,7 @@ export default function CreateBrandPage() {
               <Button type="button" variant="outline" onClick={() => router.push("/admin/brands")}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button className="bg-blue-500 text-white hover:bg-blue-600" type="submit" disabled={isLoading}>
                 {isLoading ? "Creating..." : "Create Brand"}
               </Button>
             </CardFooter>

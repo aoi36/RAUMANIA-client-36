@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { useDebounce } from "@/hooks/use-debounce"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Loader2, Search, X, SlidersHorizontal, ChevronDown, ChevronUp } from "lucide-react"
+import { Loader2, Search, X, SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react'
 import type { ProductSearchParams, ProductSummary } from "@/types/index"
 import useProductStore from "@/stores/useProductStore"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -26,6 +26,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import axios from "@/lib/axios-custom"
 import Link from "next/link"
+import { Header } from "../Header"
+import clsx from "clsx"
 
 // Define the filter options interface
 interface FilterOptions {
@@ -54,6 +56,7 @@ export default function ProductSearch() {
   const debouncedSearchQuery = useDebounce(searchQuery, 300)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const [forceUpdate, setForceUpdate] = useState(0)
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false)
 
   // Filter states
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000])
@@ -85,6 +88,24 @@ export default function ProductSearch() {
   const debouncedBrandSearch = useDebounce(brandSearchQuery, 300)
   const debouncedSizeSearch = useDebounce(sizeSearchQuery, 300)
   const debouncedScentSearch = useDebounce(scentSearchQuery, 300)
+
+  // Load all products on initial page load
+  useEffect(() => {
+    const loadInitialProducts = async () => {
+      if (!initialLoadComplete) {
+        try {
+          // Call searchElasticsearch with no parameters to get all products
+          await searchElasticsearch({})
+          setHasSearched(true)
+          setInitialLoadComplete(true)
+        } catch (error) {
+          console.error("Error loading initial products:", error)
+        }
+      }
+    }
+
+    loadInitialProducts()
+  }, [searchElasticsearch, initialLoadComplete])
 
   // Filtered options based on search
   const filteredBrands = useMemo(() => {
@@ -292,14 +313,21 @@ export default function ProductSearch() {
   // Also update the handleSearch function to include timestamp
   const handleSearch = useCallback(
     async (resetPage = true) => {
-      if (!searchQuery.trim() && activeFilters.length === 0) return
+      // REMOVED: The line below used to prevent search on empty query/filters
+      // if (!searchQuery.trim() && activeFilters.length === 0) return
 
-      setHasSearched(true)
-      setShowSuggestions(false)
+      // Add a log to see when it's called, even if empty
+      console.log("handleSearch called. Query:", searchQuery, "Filters count:", activeFilters.length);
+
+      setHasSearched(true); // Still useful to know a search attempt was made
+      setShowSuggestions(false);
+
+      // Determine the page number based on resetPage flag and current store state
+      const pageNumberToUse = resetPage ? 1 : useProductStore.getState().currentPage;
 
       const searchParams: ProductSearchParams = {
-        name: searchQuery.trim() || undefined,
-        pageNumber: resetPage ? 1 : currentPage,
+        name: searchQuery.trim() || undefined, // Will be undefined if searchQuery is empty
+        pageNumber: pageNumberToUse,
         pageSize,
         sortBy,
         sortDirection,
@@ -309,24 +337,28 @@ export default function ProductSearch() {
         size: selectedSize || undefined,
         scent: selectedScent || undefined,
         isActive: isActiveOnly,
-        timestamp: Date.now(), // Add timestamp to prevent caching
-      }
+        timestamp: Date.now(), // Keep timestamp for cache busting
+      };
 
-      console.log("Search params:", searchParams)
+      console.log("Executing search with params:", searchParams);
 
       try {
-        const result = await searchElasticsearch(searchParams)
-        console.log(`Search result: Page ${result?.pageNumber}, Total items: ${result?.totalElements}`)
-        // Force a re-render after search completes
-        setForceUpdate((prev) => prev + 1)
+        // It's generally better to rely on the store update to trigger re-renders
+        // than forceUpdate, but keeping it as it was in your original code.
+        // Consider removing setForceUpdate if store updates work reliably.
+        const result = await searchElasticsearch(searchParams);
+        console.log(`Search result: Page ${result?.pageNumber}, Total items: ${result?.totalElements}`);
+        setForceUpdate((prev) => prev + 1); // Keep forceUpdate if you found it necessary
       } catch (error) {
-        console.error("Search error:", error)
+        console.error("Search error:", error);
+        // Optionally set an error state in the store or component
       }
     },
     [
+      // Dependencies for useCallback: include everything used inside the function
       searchQuery,
-      activeFilters,
-      currentPage,
+      // activeFilters is removed as it's no longer directly used for the check
+      // currentPage is no longer directly used, fetched from store state instead
       pageSize,
       sortBy,
       sortDirection,
@@ -336,8 +368,9 @@ export default function ProductSearch() {
       selectedScent,
       isActiveOnly,
       searchElasticsearch,
-    ],
-  )
+      // setForceUpdate // Technically state setters don't need to be dependencies, but including if needed
+    ]
+  );
 
   const handleSuggestionClick = useCallback(
     async (suggestion: string) => {
@@ -446,18 +479,7 @@ export default function ProductSearch() {
     setSelectedIndex(null)
   }
 
-  const resetFilters = () => {
-    setPriceRange([0, 1000])
-    setSelectedBrand(null)
-    setSelectedSize(null)
-    setSelectedScent(null)
-    setIsActiveOnly(null)
-    setSortBy("id")
-    setSortDirection("asc")
-    setBrandSearchQuery("")
-    setSizeSearchQuery("")
-    setScentSearchQuery("")
-  }
+
 
   const removeFilter = (filter: string) => {
     if (filter.startsWith("Price:")) {
@@ -477,24 +499,24 @@ export default function ProductSearch() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto bg-[#f8f5f1]">
+    
+    <div className="w-full bg-brand-gray">
       <div className="py-8 px-4 md:px-6">
-        <h1 className="text-3xl md:text-4xl font-serif text-center mb-8 text-[#333]">Discover Your Perfect Scent</h1>
+      <h1
+          className={clsx(
+            'text-[3rem] md:text-[4rem] font-dancing tracking-tight text-brand-purple drop-shadow-md transition-all duration-700 text-center mb-6'
+          )}
+        >
+          Discover Your Perfect Scent
+        </h1>
 
-        <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col md:flex-row gap-9">
           {/* Desktop Filters Sidebar */}
-          <div className="hidden md:block w-64 shrink-0">
+          <div className="hidden md:block w-64 lg:w-96 shrink-0">
             <div className="bg-white p-5 rounded-md border border-[#e5e0d5] shadow-sm">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="font-serif text-lg text-[#333]">Refine</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={resetFilters}
-                  className="text-[#d4a6a6] hover:text-[#b87e7e] hover:bg-[#f8f5f1]"
-                >
-                  Reset
-                </Button>
+                <h3 className="font-serif text-lg text-brand-purple">Refine</h3>
+                
               </div>
 
               <Accordion type="single" collapsible className="w-full" defaultValue="price">
@@ -1072,9 +1094,7 @@ export default function ProductSearch() {
                     </div>
 
                     <SheetFooter className="flex flex-row gap-2 sm:justify-end">
-                      <Button variant="outline" onClick={resetFilters} className="border-[#d4a6a6] text-[#d4a6a6]">
-                        Reset
-                      </Button>
+                  
                       <SheetClose asChild>
                         <Button onClick={() => handleSearch()} className="bg-[#d4a6a6] hover:bg-[#b87e7e]">
                           Apply Filters
@@ -1098,7 +1118,7 @@ export default function ProductSearch() {
                   </SelectContent>
                 </Select>
 
-                <Button onClick={() => handleSearch()} disabled={isLoading} className="bg-[#d4a6a6] hover:bg-[#b87e7e]">
+                <Button onClick={() => handleSearch()} disabled={isLoading} className="bg-[#d4a6a6] hover:bg-[#b87e7e] text-white">
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                 </Button>
               </div>
@@ -1137,16 +1157,7 @@ export default function ProductSearch() {
                     </button>
                   </Badge>
                 ))}
-                {activeFilters.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={resetFilters}
-                    className="h-6 text-xs text-[#d4a6a6] hover:text-[#b87e7e] hover:bg-[#f8f5f1]"
-                  >
-                    Clear all
-                  </Button>
-                )}
+              
               </div>
             )}
 
@@ -1166,10 +1177,10 @@ export default function ProductSearch() {
               </Select>
             </div>
 
-            {hasSearched && (
+            {(hasSearched || initialLoadComplete) && (
               <div className="mt-8">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-serif text-[#333]">
+                  <h2 className="text-2xl font-serif text-brand-purple">
                     {isLoading ? "Searching..." : `Search Results (${totalProducts})`}
                   </h2>
                   {searchQuery && <p className="text-sm text-[#666]">Showing results for "{searchQuery}"</p>}
@@ -1178,23 +1189,16 @@ export default function ProductSearch() {
                 {products.length === 0 && !isLoading ? (
                   <div className="text-center py-12 border border-[#e5e0d5] rounded-md bg-white">
                     <p className="text-[#666]">No products found matching your search criteria.</p>
-                    <Button
-                      variant="link"
-                      onClick={() => {
-                        clearSearch()
-                        resetFilters()
-                      }}
-                      className="text-[#d4a6a6] hover:text-[#b87e7e]"
-                    >
-                      Clear all filters
-                    </Button>
+                    
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {products.map((product) => (
-                        <ProductCard key={`${product.id}-${forceUpdate}`} product={product as ProductSummary} />
-                      ))}
+                    <div className="max-w-7xl">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {products.map((product) => (
+                          <ProductCard key={`${product.id}-${forceUpdate}`} product={product as ProductSummary} />
+                        ))}
+                      </div>
                     </div>
 
                     {totalPages > 1 && (

@@ -14,6 +14,9 @@ import { useAuthStore } from "@/stores/useAuthStore"
 import useCartStore from "@/stores/useCartStore"
 import { toast } from "react-hot-toast"
 import useOrderStore from "@/stores/useOrderStore"
+import { Header } from "@/components/Header"
+import { NormalFooter } from "@/components/NormalFooter"
+import clsx from "clsx"
 
 // Delivery and Payment method enums
 enum DeliveryMethod {
@@ -204,7 +207,6 @@ export default function CheckoutPage() {
         // Redirect will happen in the useEffect when stripeSessionUrl is set
       } else {
         // For cash payments, redirect to order confirmation
-        toast.success("Order placed successfully!")
         router.push(`/orders/${orderResponse.id}`)
       }
     } catch (error) {
@@ -246,10 +248,20 @@ export default function CheckoutPage() {
   }
 
   return (
-    <Bounded className="min-h-screen bg-[#fffdf9] py-16">
-      <Heading className="text-center mb-12 font-cormorant text-4xl md:text-5xl" as="h1">
-        CHECKOUT
-      </Heading>
+<>
+<Header/>
+
+<div className="h-24 md:h-32 bg-brand-gray" /> 
+
+
+    <Bounded className="min-h-screen bg-brand-gray py-16">
+          <h1
+          className={clsx(
+            'text-[3rem] md:text-[4rem] font-dancing tracking-tight text-brand-purple drop-shadow-md transition-all duration-700 text-center mb-8'
+          )}
+        >
+          CHECKOUT
+        </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
         <div className="lg:col-span-2">
@@ -471,5 +483,7 @@ export default function CheckoutPage() {
         </div>
       </div>
     </Bounded>
+    <NormalFooter/>
+    </>
   )
 }

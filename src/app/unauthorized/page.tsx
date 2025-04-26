@@ -29,11 +29,11 @@ export default function UnauthorizedPage() {
 
         <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
 
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 font-sans mb-6">
           You don't have permission to access this area. This section requires administrator privileges.
         </p>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col font-sans gap-3">
           <Button asChild>
             <Link href="/">Return to Home</Link>
           </Button>

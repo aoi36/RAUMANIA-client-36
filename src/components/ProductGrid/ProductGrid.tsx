@@ -3,6 +3,7 @@ import { Bounded } from "@/components/Bounded"
 import { Heading } from "@/components/Heading"
 import { SlideIn } from "./SlideIn"
 import { PerfumeProduct } from "./PerfumeProduct"
+import { Product } from "@/types"
 
 export type ProductGridProps = {
   heading: string

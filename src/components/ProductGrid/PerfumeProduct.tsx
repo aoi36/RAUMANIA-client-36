@@ -10,7 +10,7 @@ type Product = {
   id: string
   name: string
   thumbnailImage: string
-  price: number
+  minPrice: number
   customizeUrl?: string
 }
 
@@ -28,7 +28,7 @@ export function PerfumeProduct({ product }: Props) {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
-  }).format(product.price)
+  }).format(product.minPrice)
 
   // Ensure image URL is properly formatted
   const imageUrl =
