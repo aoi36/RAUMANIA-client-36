@@ -107,7 +107,7 @@ export default function CheckoutPage() {
         await getMyCart()
 
         // Get selected items from URL
-        const itemsParam = searchParams.get("items")
+        const itemsParam = searchParams?.get("items")
         if (!itemsParam) {
           toast.error("No items selected for checkout")
           router.push("/cart")

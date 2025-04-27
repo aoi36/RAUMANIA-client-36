@@ -41,8 +41,8 @@ export default function PaymentSuccessPage() {
     if (hasVerifiedPayment) return // Prevent multiple verifications
 
     try {
-      const sessionId = searchParams.get("session_id")
-      const orderIdParam = searchParams.get("order_id")
+      const sessionId = searchParams?.get("session_id")
+      const orderIdParam = searchParams?.get("order_id")
 
       if (!sessionId) {
         setVerificationStatus("error")
