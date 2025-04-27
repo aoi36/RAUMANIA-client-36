@@ -148,41 +148,44 @@ const OrderTracking = ({
 
   return (
     <div className="py-4">
-      <h3 className="text-2xl font-cormorant text-brand-purple mb-6">Order Tracking</h3>
-      <div className="flex items-center justify-between w-full">
+      <h3 className="text-xl md:text-2xl font-cormorant text-brand-purple mb-6">
+        Order Tracking
+      </h3>
+      <div className="flex items-center justify-between w-full flex-wrap md:flex-nowrap gap-4">
         {steps.map((step, index) => (
-          <div key={index} className="flex flex-col items-center">
+          <div key={index} className="flex flex-col items-center flex-1 min-w-[70px]">
             <div
               className={`
-  flex items-center justify-center w-12 h-12 rounded-full 
-  ${
-    step.error
-      ? "bg-red-100 text-red-600"
-      : step.completed
-        ? "bg-brand-pink/20 text-brand-purple"
-        : step.current
-          ? "bg-brand-pink/40 text-brand-purple"
-          : "bg-gray-100 text-gray-400"
-  }
-  ${step.disabled ? "opacity-50" : "opacity-100"}
-`}
+                flex items-center justify-center rounded-full
+                w-10 h-10 md:w-12 md:h-12
+                ${
+                  step.error
+                    ? "bg-red-100 text-red-600"
+                    : step.completed
+                      ? "bg-brand-pink/20 text-brand-purple"
+                      : step.current
+                        ? "bg-brand-pink/40 text-brand-purple"
+                        : "bg-gray-100 text-gray-400"
+                }
+                ${step.disabled ? "opacity-50" : "opacity-100"}
+              `}
             >
-              {step.error ? <XCircle className="h-6 w-6" /> : step.icon}
+              {step.error ? <XCircle className="h-5 w-5 md:h-6 md:w-6" /> : step.icon}
             </div>
             <span
               className={`
-  text-xs mt-2 text-center font-cormorant
-  ${
-    step.error
-      ? "text-red-600"
-      : step.completed
-        ? "text-brand-purple"
-        : step.current
-          ? "text-brand-purple"
-          : "text-gray-500"
-  }
-  ${step.disabled ? "opacity-50" : "opacity-100"}
-`}
+                text-[10px] md:text-xs mt-2 text-center font-cormorant
+                ${
+                  step.error
+                    ? "text-red-600"
+                    : step.completed
+                      ? "text-brand-purple"
+                      : step.current
+                        ? "text-brand-purple"
+                        : "text-gray-500"
+                }
+                ${step.disabled ? "opacity-50" : "opacity-100"}
+              `}
             >
               {step.label}
             </span>
@@ -190,13 +193,13 @@ const OrderTracking = ({
         ))}
       </div>
     </div>
-  )
-}
+  );
+}  
 
 export default function OrderDetailsPage() {
   const router = useRouter()
   const params = useParams()
-  const orderId = params.orderId as string
+  const orderId = params?.orderId as string;  
   const { getOrderById, selectedOrder, isLoading, error, clearSelectedOrder } = useOrderStore()
   const { authUser, fetchAuthUser } = useAuthStore()
 
@@ -390,7 +393,7 @@ export default function OrderDetailsPage() {
         <div className="bg-white border border-brand-pink/20 p-8 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
-            <h1 className="mb-1 text-5xl text-brand-purple font-normal">
+            <h1 className="mb-1 text-3xl lg:text-5xl text-brand-purple font-normal">
                 Order ID: {selectedOrder.orderNumber ? `#${selectedOrder.orderNumber}` : selectedOrder.id}
               </h1>
               <p className="text-gray-500 font-cormorant">Placed on {formatDate(selectedOrder.createdAt)}</p>

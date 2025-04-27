@@ -6,7 +6,7 @@ import { Scribble } from "./Scribble"
 import Link from "next/link"
 import { HorizontalLine, VerticalLine } from "../Line"
 
-type Product = {
+type ProductGrid = {
   id: string
   name: string
   thumbnailImage: string
@@ -15,7 +15,7 @@ type Product = {
 }
 
 type Props = {
-  product: Product
+  product: ProductGrid
 }
 
 const VERTICAL_LINE_CLASSES =
@@ -44,23 +44,27 @@ export function PerfumeProduct({ product }: Props) {
 
       <div className="flex items-center justify-between text-xs">
         <span>{price}</span>
-        {/* Star rating removed as requested */}
       </div>
 
+      {/* Square image container with fixed aspect ratio */}
       <div className="-mb-1 overflow-hidden py-4 relative">
         <Scribble className="absolute inset-0 h-full w-full" color="#000" />
-        <Image
-          src={imageUrl || "/placeholder.svg"}
-          alt={product.name}
-          width={150}
-          height={150}
-          className="mx-auto w-[88%] origin-top transform-gpu transition-transform duration-500 ease-in-out group-hover:scale-150"
-        />
+
+        {/* Square container with aspect ratio */}
+        <div className="aspect-square w-full relative mx-auto overflow-hidden">
+          <Image
+            src={imageUrl || "/placeholder.svg"}
+            alt={product.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            className="object-contain mx-auto transform-gpu transition-transform duration-500 ease-in-out group-hover:scale-125"
+          />
+        </div>
       </div>
 
       <HorizontalLine className={HORIZONTAL_LINE_CLASSES} />
 
-      <h3 className="my-2 text-center font-serif leading-tight text-base">{product.name}</h3>
+      <h3 className="my-2 text-center font-serif leading-tight text-base line-clamp-2">{product.name}</h3>
 
       <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         <Link

@@ -24,7 +24,7 @@ interface BrandDropdownItem {
 export default function EditProductPage() {
   const router = useRouter()
   const params = useParams()
-  const productId = params.id as string
+  const productId = params?.id as string;
   const { fetchProductById, isLoading } = useProductStore()
   const thumbnailInputRef = useRef<HTMLInputElement>(null)
   const additionalImagesInputRef = useRef<HTMLInputElement>(null)
@@ -565,7 +565,7 @@ export default function EditProductPage() {
                   <h2 className="text-lg font-medium">Product Variants</h2>
                   <button
                     type="button"
-                    onClick={() => router.push(`/products/${productId}/variants`)}
+                    onClick={() => router.push(`/admin/product/${productId}/variants`)}
                     className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
                   >
                     Manage Variants

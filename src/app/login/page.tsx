@@ -34,6 +34,7 @@ export default function LoginPage() {
           router.back() // go back again to the page before unauthorized
         }, 100)
     } 
+    router.back()
     }catch (error) {
       console.error("Login failed:", error)
     } finally {

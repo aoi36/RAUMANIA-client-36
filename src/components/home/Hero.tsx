@@ -4,7 +4,7 @@ import { Heading } from "@/components/Heading";
 import { ButtonLink } from "@/components/ButtonLink";
 import { WideLogo } from "../WideLogo";
 import { TallLogo } from "../TallLogo";
-import { Header } from "@/components/Header";
+
 
 export type HeroProps = {
   heading: string;

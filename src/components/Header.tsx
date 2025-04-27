@@ -6,16 +6,23 @@ import { ButtonLink } from "./ButtonLink"
 import { Logo } from "./Logo"
 import { FaX } from "react-icons/fa6" // Using react-icons like the example
 import { CgMenu } from "react-icons/cg" // Using react-icons like the example
-import { FaUser, FaShoppingBag, FaSignOutAlt } from "react-icons/fa" // Additional icons
+import { FaUser, FaShoppingBag, FaSignOutAlt, FaTachometerAlt } from "react-icons/fa" // Added dashboard icon
 import axios from "@/lib/axios-custom"
-
+import { useAuthStore } from "@/stores/useAuthStore"
 
 export function Header() {
   // State to manage mobile menu visibility
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // State to manage avatar dropdown visibility
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false)
-  
+
+  // Get auth state from the store
+  const { authUser, fetchAuthUser } = useAuthStore()
+
+  // Fetch user data on component mount
+  React.useEffect(() => {
+    fetchAuthUser()
+  }, [fetchAuthUser])
 
   const navigation = [
     { label: "Home", href: "/" },
@@ -23,8 +30,11 @@ export function Header() {
     { label: "Contact", href: "/contact" },
   ]
 
-  // User menu options
+  // User menu options - conditionally add admin dashboard if user is admin
   const userMenuOptions = [
+    ...(authUser?.role === "ADMIN"
+      ? [{ label: "Admin Dashboard", href: "/admin", icon: <FaTachometerAlt className="mr-2" /> }]
+      : []),
     { label: "Profile", href: "/profile", icon: <FaUser className="mr-2" /> },
     { label: "Orders", href: "/orders", icon: <FaShoppingBag className="mr-2" /> },
   ]
@@ -33,6 +43,7 @@ export function Header() {
   const handleLogoutAndRedirect = async () => {
     try {
       await axios.post("/api/auth/logout")
+      window.location.reload()
     } catch (error) {
       console.error("Logout failed", error)
     }
@@ -95,24 +106,37 @@ export function Header() {
             {/* Dropdown Menu */}
             {avatarDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-[#e5e0d5]">
-                {userMenuOptions.map((option) => (
+                {authUser ? (
+                  <>
+                    {userMenuOptions.map((option) => (
+                      <Link
+                        key={option.href}
+                        href={option.href}
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#f8f5f1]"
+                        onClick={() => setAvatarDropdownOpen(false)}
+                      >
+                        {option.icon}
+                        {option.label}
+                      </Link>
+                    ))}
+                    <button
+                      className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#f8f5f1]"
+                      onClick={handleLogoutAndRedirect}
+                    >
+                      <FaSignOutAlt className="mr-2" />
+                      Logout
+                    </button>
+                  </>
+                ) : (
                   <Link
-                    key={option.href}
-                    href={option.href}
+                    href="/login"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#f8f5f1]"
                     onClick={() => setAvatarDropdownOpen(false)}
                   >
-                    {option.icon}
-                    {option.label}
+                    <FaSignOutAlt className="mr-2" />
+                    Login
                   </Link>
-                ))}
-                <button
-                  className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#f8f5f1]"
-                  onClick={handleLogoutAndRedirect}
-                >
-                  <FaSignOutAlt className="mr-2" />
-                  Logout
-                </button>
+                )}
               </div>
             )}
           </div>
@@ -127,7 +151,6 @@ export function Header() {
         {/* Mobile Menu Button (Visible on Mobile Only) */}
         <div className="col-start-3 row-start-1 flex items-center justify-self-end md:hidden">
           {/* Mobile cart icon next to menu button */}
-        
 
           <button
             className="z-50 p-2" // Added padding for easier clicking
@@ -170,31 +193,46 @@ export function Header() {
               {/* User menu options for mobile */}
               <li className="w-full border-t border-[#e5e0d5] pt-8 mt-4"></li>
 
-              {userMenuOptions.map((option) => (
-                <li key={option.href}>
+              {authUser ? (
+                <>
+                  {userMenuOptions.map((option) => (
+                    <li key={option.href}>
+                      <Link
+                        href={option.href}
+                        className="flex items-center hover:underline"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {React.cloneElement(option.icon, { className: "mr-2 h-5 w-5 text-[#d4a6a6]" })}
+                        {option.label}
+                      </Link>
+                    </li>
+                  ))}
+
+                  <li>
+                    <button
+                      className="flex items-center hover:underline"
+                      onClick={() => {
+                        setMobileMenuOpen(false)
+                        handleLogoutAndRedirect()
+                      }}
+                    >
+                      <FaSignOutAlt className="mr-2 h-5 w-5 text-[#d4a6a6]" />
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
                   <Link
-                    href={option.href}
+                    href="/login"
                     className="flex items-center hover:underline"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {React.cloneElement(option.icon, { className: "mr-2 h-5 w-5 text-[#d4a6a6]" })}
-                    {option.label}
+                    <FaSignOutAlt className="mr-2 h-5 w-5 text-[#d4a6a6]" />
+                    Login
                   </Link>
                 </li>
-              ))}
-
-              <li>
-                <button
-                  className="flex items-center hover:underline"
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    handleLogoutAndRedirect()
-                  }}
-                >
-                  <FaSignOutAlt className="mr-2 h-5 w-5 text-[#d4a6a6]" />
-                  Logout
-                </button>
-              </li>
+              )}
 
               {/* Mobile Cart Button Link */}
               <li className="mt-8">

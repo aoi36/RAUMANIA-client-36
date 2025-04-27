@@ -20,13 +20,10 @@ const formatCurrency = (amount: number) => {
 const DeliveryStatusBadge = ({ status }: { status: DeliveryStatus }) => {
   const getStatusColor = () => {
     switch (status) {
-      case DeliveryStatus.PENDING:
+      case DeliveryStatus.DELIVERING:
         return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case DeliveryStatus.PROCESSING:
       case DeliveryStatus.PREPARING:
         return "bg-blue-100 text-blue-800 border-blue-200"
-      case DeliveryStatus.SHIPPED:
-        return "bg-purple-100 text-purple-800 border-purple-200"
       case DeliveryStatus.DELIVERED:
         return "bg-green-100 text-green-800 border-green-200"
       case DeliveryStatus.CANCELLED:

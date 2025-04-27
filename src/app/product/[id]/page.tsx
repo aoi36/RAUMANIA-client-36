@@ -19,7 +19,7 @@ import { NormalFooter } from "@/components/NormalFooter"
 export default function ProductDetailPage() {
   // Use useParams hook instead of accessing params directly
   const params = useParams()
-  const productId = params.id as string
+  const productId = params?.id as string
 
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)

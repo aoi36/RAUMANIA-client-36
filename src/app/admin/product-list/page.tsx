@@ -2,12 +2,26 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import Image from "next/image"
 import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, Layers } from "lucide-react"
 import type { ProductPaginationParams } from "@/types/pagination"
 import useProductStore from "@/stores/useProductStore"
 import { DashboardShell } from "@/components/admin/dashboard-shell"
 import { DashboardHeader } from "@/components/admin/dashboard-header"
 import { ProductFilters } from "@/components/admin/product-filters"
+
+// Helper function to ensure image URLs are properly formatted for next/image
+const getImageUrl = (src: string | undefined | null): string => {
+  if (!src) return "/placeholder.svg?height=64&width=64"
+
+  // If it's already a valid URL or starts with a slash, return it
+  if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("/")) {
+    return src
+  }
+
+  // Otherwise, add a leading slash to make it a valid path
+  return `/${src}`
+}
 
 export default function ProductListPage() {
   const router = useRouter()
@@ -18,14 +32,19 @@ export default function ProductListPage() {
 
   const [sortField, setSortField] = useState<string>("name,asc")
 
-  // Get query params
-  const pageNumber = Number(searchParams.get("page") || "1")
-  const searchName = searchParams.get("name") || ""
-  const minPrice = Number(searchParams.get("minPrice") || "0")
-  const maxPrice = Number(searchParams.get("maxPrice") || "1000000")
-  const brandName = searchParams.get("brandName") || null
-  const isActive =
-    searchParams.get("isActive") === "true" ? true : searchParams.get("isActive") === "false" ? false : null
+  // Get query params with null safety
+  const pageNumber = searchParams ? Number(searchParams.get("page") || "1") : 1
+  const searchName = searchParams ? searchParams.get("name") || "" : ""
+  const minPrice = searchParams ? Number(searchParams.get("minPrice") || "0") : 0
+  const maxPrice = searchParams ? Number(searchParams.get("maxPrice") || "1000000") : 1000000
+  const brandName = searchParams ? searchParams.get("brandName") || null : null
+  const isActive = searchParams
+    ? searchParams.get("isActive") === "true"
+      ? true
+      : searchParams.get("isActive") === "false"
+        ? false
+        : null
+    : null
 
   // Fetch products on mount and when params change
   useEffect(() => {
@@ -47,9 +66,13 @@ export default function ProductListPage() {
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return
 
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("page", page.toString())
-    router.push(`/admin/product-list?${params.toString()}`)
+    if (searchParams) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("page", page.toString())
+      router.push(`/admin/product-list?${params.toString()}`)
+    } else {
+      router.push(`/admin/product-list?page=${page}`)
+    }
   }
 
   // Handle product actions
@@ -141,20 +164,23 @@ export default function ProductListPage() {
                     <tr key={product.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-16 w-16 rounded bg-gray-100 overflow-hidden relative">
-                            {/* <Image
-                              src={product.thumbnailImage || "/placeholder.svg?height=64&width=64"}
+                          <div className="h-16 w-16 rounded bg-gray-100 overflow-hidden">
+                            <Image
+                              src={getImageUrl(product.thumbnailImage) || "/placeholder.svg"}
                               alt={product.name}
-                              fill
-                              className="object-cover"
-                            /> */}
+                              width={64}
+                              height={64}
+                              className="object-cover w-full h-full"
+                            />
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">{product.name}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-gray-700">${product.price.toFixed(2)}</td>
+                      <td className="px-4 py-4 text-gray-700">
+                        ${product.price ? product.price.toFixed(2) : (product.minPrice || 0).toFixed(2)}
+                      </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-center gap-2">
                           <button

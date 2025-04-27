@@ -156,7 +156,7 @@ export function ProductInfo({ name, minPrice, maxPrice, variants = [], descripti
           <Button
             onClick={handleAddToCart}
             disabled={isAddingToCart}
-            className="button-cutout group inline-flex items-center bg-gradient-to-b from-brand-orange to-brand-lime from-25% to-75% bg-[length:100%_400%] font-bold text-black transition-[filter,background-position] duration-300 hover:bg-bottom hover:text-black py-5 px-6"
+            className="button-cutout group inline-flex items-center bg-gradient-to-b from-brand-purple to-brand-yellowbutton from-25% to-75% bg-[length:100%_400%] font-bold text-black transition-[filter,background-position] duration-300 hover:bg-bottom hover:text-black py-5 px-6"
           >
             {isAddingToCart ? "Adding..." : "Add to Cart"}
           </Button>

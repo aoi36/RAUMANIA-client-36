@@ -11,8 +11,8 @@ interface SearchProduct {
   price: number
   imageUrl: string
   thumbnailImage: string
-  minPrice?: number; // If applicable
-  maxPrice?: number; // If applicable
+  minPrice?: number // If applicable
+  maxPrice?: number // If applicable
 }
 
 // Define the Product interface
@@ -109,6 +109,7 @@ interface ProductStoreState {
   addProduct: (formData: FormData) => Promise<Product | null>
   updateProduct: (id: string, formData: FormData) => Promise<Product | null>
   deleteProduct: (id: string) => Promise<void>
+  fetchRelatedProducts: (limit?: number) => Promise<SearchProduct[] | null>
 }
 
 const useProductStore = create<ProductStoreState>((set, get) => ({
@@ -237,7 +238,6 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
     }
   },
 
-  
   searchElasticsearch: async (params: ProductSearchParams) => {
     set({ isLoading: true, error: null })
     try {
@@ -332,7 +332,7 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
       toast.error("Failed to update product: " + (error.response?.data?.message || "Unknown error"))
       set({ isLoading: false, error: "Failed to update product." })
       return null
-    }finally {
+    } finally {
       set({ isLoading: false })
     }
   },
@@ -352,6 +352,21 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
       console.error("Error deleting product:", error)
       toast.error("Failed to delete product: " + error.response?.data?.message || "Unknown error")
       set({ isLoading: false, error: "Failed to delete product." })
+    }
+  },
+
+  fetchRelatedProducts: async (limit = 4) => {
+    try {
+      set({ isLoading: true, error: null })
+      const res = await axios.get("/api/product/related", {
+        params: { limit },
+      })
+      set({ isLoading: false })
+      return res.data.result
+    } catch (err) {
+      console.error("Error fetching related products:", err)
+      set({ isLoading: false, error: "Failed to fetch related products" })
+      return null
     }
   },
 }))

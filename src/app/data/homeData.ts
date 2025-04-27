@@ -4,7 +4,7 @@ export const heroData = {
     heading: "Elevate Your Senses with Timeless Scents",
     body: "At Raumania Fragrance, we craft luxurious scents that capture emotions, memories, and moments. Each fragrance is designed to elevate your senses, blending the finest ingredients to create timeless aromas.",
     buttonText: "Custom Your Perfumes",
-    buttonHref: "/explore",
+    buttonHref: "/build",
     color: "yellow",
   };
   

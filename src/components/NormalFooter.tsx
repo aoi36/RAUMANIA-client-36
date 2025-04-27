@@ -9,7 +9,7 @@ export function NormalFooter() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Brand Info */}
           <div>
-            <h3 className="mb-4 font-serif text-xl font-light tracking-wide text-pink-200">
+            <h3 className="mb-4 font-serif text-xl font-light tracking-wide text-white">
               RAUMANIA
             </h3>
             <p className="text-sm font-light text-gray-400">
@@ -19,13 +19,13 @@ export function NormalFooter() {
 
           {/* Shop Links */}
           <div>
-            <h4 className="mb-4 text-sm font-medium uppercase tracking-wider text-pink-100">
+            <h4 className="mb-4 text-sm font-medium uppercase tracking-wider text-white">
               Shop
             </h4>
             <ul className="space-y-2 text-sm font-light text-gray-400">
               {["All Fragrances", "New Arrivals", "Best Sellers", "Gift Sets"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="transition-colors hover:text-pink-200">
+                  <a href="#" className="transition-colors hover:text-white">
                     {item}
                   </a>
                 </li>
@@ -35,13 +35,13 @@ export function NormalFooter() {
 
           {/* Support Links */}
           <div>
-            <h4 className="mb-4 text-sm font-medium uppercase tracking-wider text-pink-100">
+            <h4 className="mb-4 text-sm font-medium uppercase tracking-wider text-white">
               Support
             </h4>
             <ul className="space-y-2 text-sm font-light text-gray-400">
               {["Contact Us", "FAQs", "Shipping & Returns", "Track Order"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="transition-colors hover:text-pink-200">
+                  <a href="#" className="transition-colors hover:text-white">
                     {item}
                   </a>
                 </li>
@@ -51,7 +51,7 @@ export function NormalFooter() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="mb-4 text-sm font-medium uppercase tracking-wider text-pink-100">
+            <h4 className="mb-4 text-sm font-medium uppercase tracking-wider text-white">
               Newsletter
             </h4>
             <p className="mb-4 text-sm font-light text-gray-400">
@@ -63,7 +63,7 @@ export function NormalFooter() {
                 placeholder="Your email"
                 className="w-full rounded-l-full bg-gray-800 px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-pink-300"
               />
-              <button className="rounded-r-full bg-pink-200 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-pink-300">
+              <button className="rounded-r-full bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-pink-300">
                 Subscribe
               </button>
             </div>
