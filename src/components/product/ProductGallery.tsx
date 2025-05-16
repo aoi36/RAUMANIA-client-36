@@ -39,6 +39,7 @@ export function ProductGallery({ name, thumbnailImage, images }: ProductGalleryP
   const [thumbViewportRef, thumbEmbla] = useEmblaCarousel({
     containScroll: "keepSnaps",
     dragFree: true,
+    axis: "x", // Explicitly set horizontal axis
   })
 
   // State to track the currently selected index
@@ -65,12 +66,10 @@ export function ProductGallery({ name, thumbnailImage, images }: ProductGalleryP
     if (!mainEmbla) return
     onSelect()
     mainEmbla.on("select", onSelect)
-    thumbEmbla?.on("select", onSelect) // Also listen to thumbEmbla, in case it's relevant
     return () => {
       mainEmbla.off("select", onSelect)
-      thumbEmbla?.off("select", onSelect)
     }
-  }, [mainEmbla, onSelect, thumbEmbla])
+  }, [mainEmbla, onSelect])
 
   // Helper function to ensure image URLs are valid
   function ensureValidImageUrl(url: string): string {
@@ -108,26 +107,48 @@ export function ProductGallery({ name, thumbnailImage, images }: ProductGalleryP
 
       {/* Thumbnails */}
       {allImages.length > 1 && (
-        <div className="mt-4 overflow-hidden" ref={thumbViewportRef}>
-          <div className="flex gap-2 p-2">
-            {allImages.map((image, index) => (
-              <div
-                key={image.id}
-                onClick={() => onThumbClick(index)}
-                className={`relative min-w-[80px] cursor-pointer flex-[0_0_80px] overflow-hidden rounded-md bg-white transition-opacity
-                  ${selectedIndex === index ? "ring-2 ring-brand-pink" : "opacity-70 hover:opacity-100"}`}
-              >
-                <div className="relative aspect-square overflow-hidden">
-                  <Image
-                    src={image.image || "/placeholder.svg"}
-                    alt={`${name} - Thumbnail ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
+        <div className="relative mt-4">
+          <div
+            className="overflow-hidden"
+            ref={thumbViewportRef}
+            style={{
+              WebkitOverflowScrolling: "touch", // Improve scrolling on iOS
+              msOverflowStyle: "none", // Hide scrollbar in IE/Edge
+              scrollbarWidth: "none", // Hide scrollbar in Firefox
+            }}
+          >
+            <div
+              className="flex cursor-grab active:cursor-grabbing"
+              style={{
+                marginLeft: `-8px`, // Offset the first item's padding
+                paddingLeft: `8px`, // Add padding to ensure first item is fully visible
+                paddingRight: `8px`, // Add padding to ensure last item is fully visible
+              }}
+            >
+              {allImages.map((image, index) => (
+                <div
+                  key={image.id}
+                  onClick={() => onThumbClick(index)}
+                  className={`relative min-w-[80px] cursor-pointer flex-[0_0_80px] overflow-hidden rounded-md bg-white transition-opacity mx-1
+                    ${selectedIndex === index ? "ring-2 ring-brand-pink" : "opacity-70 hover:opacity-100"}`}
+                >
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image
+                      src={image.image || "/placeholder.svg"}
+                      alt={`${name} - Thumbnail ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          {/* Add visual indicator that thumbnails are scrollable */}
+          {allImages.length > 4 && (
+            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+          )}
         </div>
       )}
     </div>
